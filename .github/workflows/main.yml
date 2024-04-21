@@ -6,7 +6,7 @@ on:
 jobs:
   build-and-deploy:
     name: Build and Deploy 
-    runs-on: ubuntu_latest
+    runs-on: ubuntu-latest
     env:
       BUCKET: www.tisanbako.com
       DIST: build 
@@ -40,10 +40,10 @@ jobs:
 
     - name: Copy files to production website with the AWS CLI 
       run: |
-        aws s3 sync --delete ${{ env.DIST }} S3://${{ env.BUCKET }}
+        aws s3 sync --delete ${{ env.DIST }} s3://${{ env.BUCKET }}
 
     - name: Copy files to the production website with the AWS CLI 
       run: |
-        aws  cloudfront create-invaldation \
+        aws  cloudfront create-invalidation \
         --distribution-id ${{ env.DIST_ID }} \
         --paths "/*"

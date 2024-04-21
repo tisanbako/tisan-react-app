@@ -1,0 +1,49 @@
+name: Build and Deploy React App to CloudFront 
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy 
+    runs-on: ubuntu_latest
+    env:
+      BUCKET: www.tisanbako.com
+      DIST: build 
+      REGION: us-east-1 
+      DIST_ID: E2WP8E8AJGO6H0   #eg E2CT3VCQ08J771 WE USE THIS TO INVALIDATE THE CACHE
+
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.REGION }}
+
+#Ubuntu comes with a default version of node.js if you want a specific version, just use setuo-node action like
+#   - uses: action/setup-node@v2
+#     with:
+#       node-version: '14'
+
+    - name: Install Dependencies
+      run: |
+        node --version
+        npm ci --production 
+
+    - name: Build Static Website 
+      run: npm run build  
+
+    - name: Copy files to production website with the AWS CLI 
+      run: |
+        aws s3 sync --delete ${{ env.DIST }} S3://${{ env.BUCKET }}
+
+    - name: Copy files to the production website with the AWS CLI 
+      run: |
+        aws  cloudfront create-invaldation \
+        --distribution-id ${{ env.DIST_ID }} \
+        --paths "/*"

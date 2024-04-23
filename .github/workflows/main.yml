@@ -8,7 +8,7 @@ jobs:
     name: Build and Deploy 
     runs-on: ubuntu-latest
     env:
-      BUCKET: www.tisanbako.com
+      BUCKET: www.emsterebservices.com
       DIST: build 
       REGION: us-east-1 
       DIST_ID: E2WP8E8AJGO6H0   #eg E2CT3VCQ08J771 WE USE THIS TO INVALIDATE THE CACHE
